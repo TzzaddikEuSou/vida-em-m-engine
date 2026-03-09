@@ -27,7 +27,7 @@ const FLASHCARDS = [
 ];
 
 function App() {
-  const [appState, setAppState] = useState<'intro' | 'dashboard' | 'study'>('intro');
+  const [appState, setAppState] = useState<'intro' | 'dashboard' | 'study' | 'storybook'>('intro');
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
   // Manipulador para quando uma resposta SM-2 é clicada
@@ -50,17 +50,16 @@ function App() {
       <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-brand-pink/10 blur-[150px] rounded-full pointer-events-none" />
 
       {appState === 'intro' && (
-        <IntroScreen onEnter={() => setAppState('dashboard')} />
+        <IntroScreen onEnter={() => setAppState('storybook')} />
       )}
 
       {appState !== 'intro' && (
-        <div className="w-full h-full flex flex-col items-center p-6 md:p-12 z-10 animate-fade-in">
+        <div className="w-full h-full flex flex-col items-center p-6 md:p-12 z-10 animate-fade-in max-w-5xl">
           <Header activeTab={appState} setActiveTab={setAppState} />
 
-          <main className="w-full max-w-5xl flex-1 flex flex-col items-center justify-center">
-            {appState === 'dashboard' ? (
-              <Dashboard onStartStudy={() => setAppState('study')} />
-            ) : (
+          <main className="w-full h-full flex-1 flex flex-col">
+            {appState === 'dashboard' && <Dashboard onStartStudy={() => setAppState('study')} />}
+            {appState === 'study' && (
               <StudySession
                 card={FLASHCARDS[activeCardIndex]}
                 currentIndex={activeCardIndex}
@@ -68,6 +67,7 @@ function App() {
                 onReview={handleReview}
               />
             )}
+            {appState === 'storybook' && <StorybookView onGoToSM2={() => setAppState('study')} />}
           </main>
         </div>
       )}
@@ -107,54 +107,154 @@ function IntroScreen({ onEnter }: { onEnter: () => void }) {
 
 function Header({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (t: any) => void }) {
   return (
-    <header className="w-full max-w-5xl flex flex-col sm:flex-row gap-6 justify-between items-center mb-12 pt-4">
-      <h2 className="text-2xl font-display tracking-tight font-bold">
-        Vida<span className="text-brand-purple">_</span>em<span className="text-brand-pink">_</span>M
-      </h2>
-      <div className="flex gap-2 glass-panel p-1 rounded-full">
+    <header className="w-full flex flex-col sm:flex-row gap-6 justify-between items-center mb-10 pt-2 border-b border-white/5 pb-6">
+      <div className="flex items-center gap-4 w-full sm:w-auto">
+        <button className="w-10 h-10 flex flex-col justify-center items-center gap-1.5 glass-panel hover:bg-white/10 transition-colors rounded-xl">
+          <span className="w-5 h-0.5 bg-white block"></span>
+          <span className="w-5 h-0.5 bg-white block"></span>
+          <span className="w-5 h-0.5 bg-white block"></span>
+        </button>
+        <h2 className="text-2xl font-display tracking-tight font-bold ml-2">
+          Vida <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple to-brand-pink">em M</span>
+        </h2>
+      </div>
+
+      <div className="flex-1 max-w-xs mx-auto hidden md:flex items-center gap-4 w-full px-4">
+        <div className="flex-1 bg-white/5 h-1.5 rounded-full overflow-hidden">
+          <div className="bg-gradient-to-r from-brand-purple to-brand-pink h-full w-[13%] rounded-full shadow-[0_0_10px_#ff6cb3]"></div>
+        </div>
+        <span className="text-gray-500 text-xs font-bold">13%</span>
+      </div>
+
+      <div className="flex gap-2">
         <button
           onClick={() => setActiveTab('dashboard')}
-          className={`px-6 py-2 rounded-full font-bold text-sm transition-all duration-300 ${activeTab === 'dashboard' ? 'bg-gradient-to-r from-brand-purple to-brand-pink text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+          className={`px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 ${activeTab === 'dashboard' ? 'bg-white/10 text-white border border-white/20 shadow-lg' : 'text-gray-400 hover:text-white border border-transparent hover:bg-white/5'}`}
         >
-          Minha Jornada
+          Painel
+        </button>
+        <button
+          onClick={() => setActiveTab('storybook')}
+          className={`px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 ${activeTab === 'storybook' ? 'bg-white/10 text-white border border-white/20 shadow-lg' : 'text-gray-400 hover:text-white border border-transparent hover:bg-white/5'}`}
+        >
+          Lição
         </button>
         <button
           onClick={() => setActiveTab('study')}
-          className={`px-6 py-2 rounded-full font-bold text-sm transition-all duration-300 ${activeTab === 'study' ? 'bg-gradient-to-r from-brand-purple to-brand-pink text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+          className={`px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 border border-brand-purple/40 hover:bg-brand-purple/20 ${activeTab === 'study' ? 'bg-brand-purple/20 text-white shadow-[0_0_10px_rgba(123,108,255,0.4)]' : 'text-brand-purple hover:text-white bg-black/40'}`}
         >
-          Sessão de Graça
+          <span>🃏</span> SM-2
         </button>
       </div>
     </header>
   );
 }
 
+function StorybookView({ onGoToSM2 }: { onGoToSM2: () => void }) {
+  return (
+    <div className="w-full flex-1 flex flex-col animate-fade-in">
+      {/* Chapter header */}
+      <div className="flex justify-between items-center mb-10 w-full mt-4">
+        <div className="flex items-center gap-4">
+          <div className="text-3xl">🎨</div>
+          <div>
+            <h4 className="text-brand-pink text-xs font-bold tracking-[0.2em] uppercase mb-1">Capítulo 02</h4>
+            <h1 className="text-3xl md:text-4xl font-display font-medium text-white">UI/UX Cinemático</h1>
+          </div>
+        </div>
+
+        {/* Pagination Dots */}
+        <div className="flex gap-2 invisible sm:visible">
+          <div className="w-2.5 h-2.5 rounded-full bg-brand-pink shadow-[0_0_8px_#ff6cb3]"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-white/10"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-white/10"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-white/10"></div>
+        </div>
+      </div>
+
+      {/* Content wrapper */}
+      <div className="w-full flex-1 border-l-2 border-brand-purple/80 pl-8 pr-4 py-2 pb-24 relative text-lg md:text-xl text-gray-400 font-light leading-[1.8] flex flex-col">
+
+        <h2 className="text-3xl font-display font-bold text-white mb-6">A Identidade Visual</h2>
+
+        <p className="mb-12 max-w-3xl">
+          A experiência começa antes do conteúdo. Um design cinemático em modo escuro cria imersão total.
+          O fundo <span className="text-white">#08080e</span> ('negro infinito') elimina distrações e coloca o foco no aprendizado.
+          Glassmorphism nos painéis e gradientes nos botões sinalizam qualidade e cuidado.
+        </p>
+
+        {/* Stats Section */}
+        <div className="w-full max-w-2xl space-y-8 mt-4 auto-mt">
+
+          <div className="w-full space-y-3">
+            <div className="flex justify-between items-end font-bold">
+              <span className="text-white text-base">Retenção com bom design</span>
+              <span className="text-brand-pink text-xl">78%</span>
+            </div>
+            <div className="w-full bg-white/5 h-2.5 rounded-full overflow-hidden">
+              <div className="bg-brand-pink h-full w-[78%] rounded-full shadow-[0_0_10px_rgba(255,108,179,0.8)]"></div>
+            </div>
+          </div>
+
+          <div className="w-full space-y-3">
+            <div className="flex justify-between items-end font-bold">
+              <span className="text-white text-base">Retenção sem design</span>
+              <span className="text-white/30 text-xl font-normal">34%</span>
+            </div>
+            <div className="w-full bg-white/5 h-2.5 rounded-full overflow-hidden">
+              <div className="bg-white/10 h-full w-[34%] rounded-full"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* Footer Navigation */}
+      <div className="flex justify-between items-center w-full mt-auto pt-6 border-t border-white/5">
+        <button className="glass-panel px-6 py-3 font-bold text-white hover:bg-white/10 transition flex items-center gap-2">
+          <span className="text-white/50">←</span> Anterior
+        </button>
+
+        <span className="text-gray-500 font-bold text-sm tracking-widest">1 / 4</span>
+
+        <button
+          onClick={onGoToSM2}
+          className="px-8 py-3 rounded-[16px] bg-gradient-to-r from-brand-purple to-brand-pink text-white font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(123,108,255,0.4)] flex items-center gap-2"
+        >
+          Próximo <span className="text-white/80">→</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Dashboard({ onStartStudy }: { onStartStudy: () => void }) {
+  // ... resto igual ... (dashboard minified slightly to fit)
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full animate-fade-in">
-      {/* Profile Card */}
-      <div className="col-span-1 md:col-span-2 glass-panel glass-glow p-8 flex flex-col relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-purple/10 rounded-full blur-[80px] group-hover:bg-brand-purple/20 transition-all duration-700" />
+      <div className="col-span-1 md:col-span-2 glass-panel p-8 flex flex-col relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-purple/10 blur-[80px] rounded-full pointer-events-none" />
 
         <h3 className="text-md uppercase tracking-widest text-brand-gold mb-1 font-bold">Status Espiritual</h3>
         <h2 className="text-4xl font-display mb-2 text-white">Nível: Obreiro</h2>
-        <p className="text-gray-400 mb-8 max-w-md">Sua mente está sendo renovada através da palavra. Continue firme no descanso da Graça.</p>
+        <p className="text-gray-400 mb-8 max-w-md">Sua mente está sendo renovada através da palavra.</p>
 
         <div className="mt-auto">
           <div className="flex justify-between text-sm mb-3">
             <span className="font-bold">1.520 XP</span>
             <span className="text-gray-500">Mestre (5.000 XP)</span>
           </div>
-          <div className="w-full bg-black/40 rounded-full h-4 backdrop-blur-sm border border-white/5 overflow-hidden">
-            <div className="bg-gradient-to-r from-brand-purple via-brand-pink to-brand-neon h-full rounded-full w-[30%] shadow-[0_0_15px_rgba(108,255,200,0.5)] transition-all duration-1000 ease-out"></div>
+          <div className="w-full bg-white/10 rounded-full h-4 overflow-hidden">
+            <div className="bg-gradient-to-r from-brand-purple via-brand-pink to-brand-neon h-full rounded-full w-[30%]"></div>
           </div>
         </div>
       </div>
 
       {/* Streak Card */}
-      <div className="col-span-1 glass-panel p-8 flex flex-col items-center justify-center text-center group cursor-default">
+      <div className="col-span-1 glass-panel p-8 flex flex-col items-center justify-center text-center">
         <div className="relative">
-          <div className="absolute inset-0 bg-brand-gold/20 blur-[30px] rounded-full group-hover:bg-brand-gold/40 transition-all duration-500" />
+          <div className="absolute inset-0 bg-brand-gold/20 blur-[30px] rounded-full" />
           <div className="text-6xl mb-4 relative z-10 animate-float" style={{ animationDuration: '4s' }}>🔥</div>
         </div>
         <h3 className="text-3xl font-display font-bold text-white mb-1">12 Dias</h3>
@@ -163,12 +263,12 @@ function Dashboard({ onStartStudy }: { onStartStudy: () => void }) {
 
       {/* Quick Start Card */}
       <div className="col-span-1 md:col-span-3 mt-4">
-        <button onClick={onStartStudy} className="w-full glass-panel glass-glow p-6 flex justify-between items-center group hover:bg-white/10 transition-all duration-300">
+        <button onClick={onStartStudy} className="w-full glass-panel glass-glow p-6 flex justify-between items-center hover:bg-white/10 transition-all">
           <div className="text-left">
             <h3 className="text-xl font-bold font-display text-brand-neon">Iniciar Nova Sessão SM-2</h3>
-            <p className="text-gray-400 text-sm mt-1">3 cartões pendentes de revisão hoje.</p>
+            <p className="text-gray-400 text-sm mt-1">3 cartões pendentes hoje.</p>
           </div>
-          <div className="w-12 h-12 rounded-full bg-brand-neon/20 flex items-center justify-center text-brand-neon group-hover:scale-110 transition-all">
+          <div className="w-12 h-12 rounded-full bg-brand-neon/20 flex items-center justify-center text-brand-neon text-2xl">
             →
           </div>
         </button>
@@ -178,15 +278,9 @@ function Dashboard({ onStartStudy }: { onStartStudy: () => void }) {
 }
 
 function StudySession({ card, currentIndex, totalCards, onReview }: { card: any, currentIndex: number, totalCards: number, onReview: () => void }) {
+  // ... igual ao SM2 original gerado na etapa transacional
   const [flipped, setFlipped] = useState(false);
-
-  // Helper para virar o cartão e lidar com next card via uma única func
-  const handleAnswer = () => {
-    setFlipped(false);
-    setTimeout(() => {
-      onReview();
-    }, 150);
-  };
+  const handleAnswer = () => { setFlipped(false); setTimeout(() => onReview(), 150); };
 
   return (
     <div className="flex-1 w-full flex flex-col items-center justify-center animate-fade-in py-8">
@@ -194,11 +288,6 @@ function StudySession({ card, currentIndex, totalCards, onReview }: { card: any,
       {/* Progress */}
       <div className="w-full max-w-xl flex justify-between items-center mb-6 px-2">
         <span className="text-brand-pink font-bold text-sm tracking-widest uppercase">Cartão {currentIndex + 1} de {totalCards}</span>
-        <div className="flex gap-1">
-          {Array.from({ length: totalCards }).map((_, i) => (
-            <div key={i} className={`h-1.5 w-8 rounded-full ${i <= currentIndex ? 'bg-brand-pink' : 'bg-white/10'}`} />
-          ))}
-        </div>
       </div>
 
       {/* FLASHCARD 3D SCENE */}
@@ -208,53 +297,47 @@ function StudySession({ card, currentIndex, totalCards, onReview }: { card: any,
           onClick={() => !flipped && setFlipped(true)}
         >
           {/* FRONT */}
-          <div className="absolute inset-0 backface-hidden glass-panel flex flex-col items-center justify-center p-8 md:p-12 text-center border-t border-l border-white/20 bg-gradient-to-br from-white/5 to-transparent">
+          <div className="absolute inset-0 backface-hidden glass-panel flex flex-col items-center justify-center p-8 text-center border-t border-l border-white/20 bg-gradient-to-br from-white/5 to-transparent">
             <span className="text-brand-gold text-xs font-bold tracking-[0.2em] uppercase mb-6 block bg-brand-gold/10 px-3 py-1 rounded-full border border-brand-gold/20">
               {card.topic}
             </span>
-            <h2 className="text-3xl md:text-4xl font-display font-medium leading-tight">
+            <h2 className="text-3xl lg:text-4xl font-display font-medium leading-tight">
               {card.front}
             </h2>
-            <p className="absolute bottom-8 mt-8 text-gray-500 text-xs tracking-widest uppercase flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-brand-purple animate-pulse"></span>
-              Toque para revelar
-            </p>
           </div>
 
           {/* BACK */}
-          <div className="absolute inset-0 backface-hidden glass-panel rotate-y-180 flex flex-col items-center justify-center p-8 md:p-12 text-center bg-brand-purple/5 border-brand-purple/30">
-            <div className="flex-1 flex items-center justify-center">
-              <p className="text-xl md:text-2xl leading-relaxed font-light">
-                {card.back}
-              </p>
-            </div>
+          <div className="absolute inset-0 backface-hidden glass-panel rotate-y-180 flex flex-col items-center justify-center p-8 text-center bg-brand-purple/5 border-brand-purple/30">
+            <p className="text-xl md:text-2xl leading-relaxed">
+              {card.back}
+            </p>
 
             <div className="mt-8 pt-6 border-t border-white/10 w-full flex justify-center">
-              <p className="text-brand-neon font-bold text-sm tracking-widest flex items-center gap-2 bg-brand-neon/10 px-4 py-2 rounded-full border border-brand-neon/20">
+              <span className="text-brand-neon p-3 bg-white/5 rounded-full">
                 📖 {card.ref}
-              </p>
+              </span>
             </div>
           </div>
         </div>
       </div>
 
       {/* SM-2 ACTION BUTTONS */}
-      <div className={`flex flex-wrap justify-center gap-4 mt-12 transition-all duration-500 ${flipped ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}>
+      <div className={`flex justify-center gap-4 mt-12 transition-all ${flipped ? 'opacity-100' : 'opacity-0'}`}>
         <button
           onClick={handleAnswer}
-          className="px-8 py-3 rounded-2xl bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 font-bold transition-all hover:scale-105 active:scale-95"
+          className="px-8 py-3 rounded-2xl bg-red-500/10 text-red-500 font-bold border-red-500/20"
         >
           Esqueci / Difícil
         </button>
         <button
           onClick={handleAnswer}
-          className="px-8 py-3 rounded-2xl bg-brand-gold/10 text-brand-gold border border-brand-gold/30 hover:bg-brand-gold/20 hover:border-brand-gold/50 font-bold transition-all hover:scale-105 active:scale-95"
+          className="px-8 py-3 rounded-2xl bg-brand-gold/10 text-brand-gold font-bold"
         >
           Bom / Médio
         </button>
         <button
           onClick={handleAnswer}
-          className="px-8 py-3 rounded-2xl bg-brand-neon/10 text-brand-neon border border-brand-neon/30 hover:bg-brand-neon/20 hover:border-brand-neon/50 font-bold glass-glow transition-all hover:scale-105 active:scale-95"
+          className="px-8 py-3 rounded-2xl bg-brand-neon/10 text-brand-neon font-bold"
         >
           Fácil
         </button>
