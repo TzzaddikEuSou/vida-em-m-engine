@@ -1,0 +1,24 @@
+
+> web@0.0.0 dev
+> vite --debug
+
+X [ERROR] Unexpected end of file in JSON
+
+    ../../../../../../../package.json:1:0:
+      1 │ 
+        ╵ ^
+
+[31mfailed to load config from C:\Users\alex\Desktop\vault-pr-alex-da-silveira\vault-pr-alex-da-silveira\vault\Vida-em-M\App\web\vite.config.ts[39m
+[31merror when starting dev server:
+Error: Build failed with 1 error:
+../../../../../../../package.json:1:0: ERROR: Unexpected end of file in JSON
+    at failureErrorWithLog (C:\Users\alex\Desktop\vault-pr-alex-da-silveira\vault-pr-alex-da-silveira\vault\Vida-em-M\App\web\node_modules\esbuild\lib\main.js:1467:15)
+    at C:\Users\alex\Desktop\vault-pr-alex-da-silveira\vault-pr-alex-da-silveira\vault\Vida-em-M\App\web\node_modules\esbuild\lib\main.js:926:25
+    at runOnEndCallbacks (C:\Users\alex\Desktop\vault-pr-alex-da-silveira\vault-pr-alex-da-silveira\vault\Vida-em-M\App\web\node_modules\esbuild\lib\main.js:1307:45)
+    at buildResponseToResult (C:\Users\alex\Desktop\vault-pr-alex-da-silveira\vault-pr-alex-da-silveira\vault\Vida-em-M\App\web\node_modules\esbuild\lib\main.js:924:7)
+    at C:\Users\alex\Desktop\vault-pr-alex-da-silveira\vault-pr-alex-da-silveira\vault\Vida-em-M\App\web\node_modules\esbuild\lib\main.js:951:16
+    at responseCallbacks.<computed> (C:\Users\alex\Desktop\vault-pr-alex-da-silveira\vault-pr-alex-da-silveira\vault\Vida-em-M\App\web\node_modules\esbuild\lib\main.js:603:9)
+    at handleIncomingPacket (C:\Users\alex\Desktop\vault-pr-alex-da-silveira\vault-pr-alex-da-silveira\vault\Vida-em-M\App\web\node_modules\esbuild\lib\main.js:658:12)
+    at Socket.readFromStdout (C:\Users\alex\Desktop\vault-pr-alex-da-silveira\vault-pr-alex-da-silveira\vault\Vida-em-M\App\web\node_modules\esbuild\lib\main.js:581:7)
+    at Socket.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)[39m
